@@ -1,6 +1,3 @@
-# Constants for counter bounds and initial value
-COUNTER_MIN = 0
-COUNTER_MAX = 99
 COUNTER_START = 50
 
 
