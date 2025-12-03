@@ -1,43 +1,75 @@
-from typing import Self
+# Constants for counter bounds and initial value
+COUNTER_MIN = 0
+COUNTER_MAX = 99
+COUNTER_START = 50
 
 
 class SafeCombinationDecoder:
-    def __init__(self: Self, input_file_path: str):
-        self.limit_min = 0
-        self.limit_max = 99
-        self.counter = 50
-        self.answer = 0
-        with open(input_file_path, "r") as safe_combination_file:
-            safe_combination_file.seek(0)
-            self.safe_combination = safe_combination_file.read().strip().splitlines()
+    """
+    Decodes a safe combination by processing movement instructions.
 
-    def decode(self: Self) -> int:
-        for number in self.safe_combination:
-            sign = number[0]
-            value = int(number[1:])
+    The decoder maintains a counter that wraps around in a circular buffer
+    (0-99), processing left (L) and right (R) movement instructions,
+    and counts how many times the counter lands on 0.
+    """
 
-            if value > 100:
-                value = value % 100
+    def __init__(self, instructions: list[str]):
+        """
+        Initialize the decoder with a list of instructions.
+        """
+        self.instructions = instructions
 
-            if sign == "L":
-                if self.counter - value < self.limit_min:
-                    self.counter = self.limit_max - (value - self.counter) + 1
-                else:
-                    self.counter -= value
-            else:
-                if self.counter + value > self.limit_max:
-                    self.counter = (value + self.counter) - self.limit_max - 1
-                else:
-                    self.counter += value
+    @classmethod
+    def from_file(cls, filepath: str) -> "SafeCombinationDecoder":
+        """
+        Create a SafeCombinationDecoder from a file.
+        """
+        with open(filepath, "r") as file:
+            instructions = file.read().strip().splitlines()
+        return cls(instructions)
 
-            if self.counter == 0:
-                self.answer += 1
+    def _move_left(self, counter: int, amount: int) -> int:
+        """
+        Move the counter left (decrease) with wrapping.
+        """
+        return (counter - amount) % 100
+
+    def _move_right(self, counter: int, amount: int) -> int:
+        """
+        Move the counter right (increase) with wrapping.
+        """
+        return (counter + amount) % 100
+
+    def decode(self) -> int:
+        """
+        Process all instructions and count how many times counter reaches 0.
+        """
+        counter = COUNTER_START
+        answer = 0
+
+        for instruction in self.instructions:
+            direction = instruction[0]
+            amount = int(instruction[1:])
+
+            # Normalize amounts greater than 100
+            if amount > 100:
+                amount = amount % 100
+
+            if direction == "L":
+                counter = self._move_left(counter, amount)
+            else:  # direction == "R"
+                counter = self._move_right(counter, amount)
+
+            if counter == 0:
+                answer += 1
+
+        return answer
 
 
 def main():
-    safe_decoder = SafeCombinationDecoder("input.txt")
-    safe_decoder.decode()
-    print(f"The final answer is: {safe_decoder.answer}")
+    safe_decoder = SafeCombinationDecoder.from_file("input.txt")
+    answer = safe_decoder.decode()
+    print(f"The final answer is: {answer}")
 
 
 if __name__ == "__main__":
