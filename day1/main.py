@@ -1,5 +1,6 @@
 from typing import Self
 
+
 class SafeCombinationDecoder:
     def __init__(self: Self, input_file_path: str):
         self.limit_min = 0
@@ -15,22 +16,26 @@ class SafeCombinationDecoder:
             sign = number[0]
             value = int(number[1:])
 
+            if value > 100:
+                value = value % 100
+
             if sign == "L":
-                if self.counter - value == 0:
-                    self.answer += 1
-                elif self.counter - value < self.limit_min:
-                   self.counter = self.limit_max - (value - self.counter) 
+                if self.counter - value < self.limit_min:
+                    self.counter = self.limit_max - (value - self.counter) + 1
                 else:
                     self.counter -= value
             else:
-                if self.counter + value == 0:
-                    self.answer += 1
-                elif self.counter + value > self.limit_max:
-                    self.counter = self.limit_min + ((value + self.counter) - self.limit_max)
+                if self.counter + value > self.limit_max:
+                    self.counter = (value + self.counter) - self.limit_max - 1
                 else:
                     self.counter += value
+
+            if self.counter == 0:
+                self.answer += 1
+
+
 def main():
-    safe_decoder = SafeCombinationDecoder("testinput.txt")
+    safe_decoder = SafeCombinationDecoder("input.txt")
     safe_decoder.decode()
     print(f"The final answer is: {safe_decoder.answer}")
 
