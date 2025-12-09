@@ -5,9 +5,13 @@ def find_invalid_ids(start, end):
     invalid_ids = set()
     for id in range(start, end + 1):
         test_id = str(id)
-        invalid_id = re.search(r"^(\d+?)\1+$", test_id)
-        if invalid_id:
-            invalid_ids.add(int(invalid_id.group(1)))
+        invalid_id = re.search(r"^(\d+)\1+$", test_id)
+        # NOTE: Part one solution
+        # if invalid_id and test_id.count(invalid_id.group(1)) == 2:
+        #     invalid_ids.add(id)
+        # NOTE: Part two solution
+        if invalid_id and test_id.count(invalid_id.group(1)) >= 2:
+            invalid_ids.add(id)
 
     return invalid_ids
 
@@ -24,6 +28,5 @@ def main():
     print(result)
 
 
-# TODO - I am getting a number that is too high, check what the issue is
 if __name__ == "__main__":
     main()
