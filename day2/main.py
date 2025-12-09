@@ -2,7 +2,7 @@ import re
 
 
 def find_invalid_ids(start, end):
-    invalid_ids = set()
+    invalid_ids = []
     for id in range(start, end + 1):
         test_id = str(id)
         invalid_id = re.search(r"^(\d+)\1+$", test_id)
@@ -11,7 +11,7 @@ def find_invalid_ids(start, end):
         #     invalid_ids.add(id)
         # NOTE: Part two solution
         if invalid_id and test_id.count(invalid_id.group(1)) >= 2:
-            invalid_ids.add(id)
+            invalid_ids.append(id)
 
     return invalid_ids
 
